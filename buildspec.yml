@@ -16,14 +16,13 @@ phases:
       - pip install -r requirements.txt pylint
       - yum update -y
       - yum install -y jq
-      # Install Java 17 correctly
       - sudo yum remove -y java-11-openjdk
       - sudo yum install -y java-17-amazon-corretto
-      - java -version  # Verify installed Java version
+      - java -version
       - export JAVA_HOME=/usr/lib/jvm/java-17-amazon-corretto.x86_64
       - export PATH=$JAVA_HOME/bin:$PATH
       - echo "JAVA_HOME is set to $JAVA_HOME"
-      - java -version  # Confirm Java 17 is being used
+      - java -version
 
 
   pre_build:
@@ -31,11 +30,10 @@ phases:
       - echo "PRE-Build stage"
       - python --version
       - python manage.py collectstatic --noinput
-      # Download latest SonarScanner CLI (v5.0+)
       - wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
       - unzip ./sonar-scanner-cli-5.0.1.3006-linux.zip
       - export PATH=$PATH:./sonar-scanner-5.0.1.3006-linux/bin/
-      - sonar-scanner --version  # Verify sonar-scanner version
+      - sonar-scanner --version
       - echo "pre build stage completed"
       - echo "PyLint Started"
       - pylint utility_services/**/*.py || true
