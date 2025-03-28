@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+
+<html>
+    {%extends 'admin_sidebar.html'%}
+    {% block content %}
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="">
+        {%load static%}
+        <link rel="stylesheet" href="{% static 'css/animations.css' %}">  
+        <link rel="stylesheet" href="{% static 'css/main.css' %}">  
+        <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+
+        <link href='https://cdn.jsdelivr.net/npm/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
+
+
+
+        <style>
+            .content{
+                padding:20px;
+            }
+
+            .navbar {
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px 20px;
+                background-color: #142333;
+                color: white;
+                position: sticky;
+                top: 0;
+                z-index: 1000;
+                border: 2px;
+                border-radius: 10px;
+            }
+
+            .navbar .username {
+                font-weight: bold;
+                font-size: 16px;
+            }
+
+            
+        </style>
+
+    </head>
+    <body>
+
+        <div class="navbar">
+            <div class="search-bar" style="padding:3px;">
+                <input class="search-input" id="searchInput" type="text" placeholder="Search...">
+                <button style="font-size:25px; background-color:unset; color:black; padding:unset;"><i class='bx bx-search'></i></button>
+            </div>
+
+            <div class="username">
+                <p>Admin</p> <!-- Display the logged-in username -->
+            </div>
+        </div>
+    
+    <div>
+
+            <center>
+            <table class="filter-container" style="border: none;" border="0">
+                <tr>
+                    <td colspan="4">
+                        <p style="font-size: 20px;font-weight:600;padding-left: 12px;">Status</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 25%;">
+                        <div  class="dashboard-items"  style="padding:20px;margin:auto;width:95%;display: flex">
+                            <div>
+                                    <div class="h1-dashboard">
+                                        {{service_providers.0}}
+                                    </div><br>
+                                    <div class="h3-dashboard">
+                                        Professionals &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    </div>
+                            </div>
+                                    <div class="btn-icon-back" style="width:35%; background-image: url('{% static 'images/shop.png' %}'); "></div>
+                        </div>
+                    </td>
+
+                    <td style="width: 25%;">
+                        <div  class="dashboard-items"  style="padding:20px;margin:auto;width:85%;display: flex">
+                            <div>
+                                    <div class="h1-dashboard">
+                                        {{orders.0}}
+                                    </div><br>
+                                    <div class="h3-dashboard">
+                                        Orders &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    </div>
+                            </div>
+                                    <div class="btn-icon-back" style="width:35%; background-image: url('{% static 'images/cart.png' %}');"></div>
+                        </div>
+                    </td>
+
+
+
+                    <td style="width: 25%;">
+                        <div  class="dashboard-items"  style=" width:35%; padding:20px;margin:auto;width:85%;display: flex">
+                            <div>
+                                    <div class="h1-dashboard">
+                                        {{users.0}}
+                                    </div><br>
+                                    <div class="h3-dashboard">
+                                        Customers &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    </div>
+                            </div>
+                                    <div class="btn-icon-back" style="width:35%; background-image: url('{% static 'images/customers.png' %}');"></div>
+                        </div>
+                    </td>
+
+                </tr>
+            </table>
+        </center>
+    </div>
+    
+        <script src="" async defer></script>
+
+        <script>
+            // Search functionality
+            document.getElementById('searchInput').addEventListener('input', function() {
+                var input = this.value.toLowerCase();
+                var rows = document.querySelectorAll('#categoriesTable tbody tr');
+                rows.forEach(function(row) {
+                    var nameCell = row.cells[1].textContent.toLowerCase(); // The Name column
+                    var descriptionCell = row.cells[2].textContent.toLowerCase(); // The Description column
+                    
+                    if (nameCell.includes(input) || descriptionCell.includes(input)) {
+                        row.style.display = ''; // Show the row
+                    } else {
+                        row.style.display = 'none'; // Hide the row
+                    }
+                });
+            });
+        </script>
+        
+    {% endblock content%}
+    
+    </body>
+</html>

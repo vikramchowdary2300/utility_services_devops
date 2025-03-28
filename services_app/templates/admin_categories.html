@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+    {% extends 'admin_sidebar.html' %}
+    {% block content %}
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Categories</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'css/animations.css' %}">  
+        <link rel="stylesheet" href="{% static 'css/main.css' %}">  
+        <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+
+        <link href='https://cdn.jsdelivr.net/npm/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
+
+        
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 0;
+            }
+
+            h1 {
+                text-align: center;
+                font-size: 24px;
+                font-weight: 600;
+                color: #333;
+            }
+            
+            .actions button {
+                margin-right: 10px;
+                padding: 8px 16px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                color: #fff;
+            }
+            .edit-btn {
+                background-color: #28a745;
+            }
+            .delete-btn {
+                background-color: #dc3545;
+            }
+            .edit-btn:hover, .delete-btn:hover {
+                opacity: 0.9;
+            }
+
+            .content{
+                padding:20px;
+            }
+
+
+            .navbar {
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px 20px;
+                background-color: #142333;
+                color: white;
+                position: sticky;
+                top: 0;
+                z-index: 1000;
+                border: 2px;
+                border-radius: 10px;
+            }
+
+            .navbar .username {
+                font-weight: bold;
+                font-size: 16px;
+            }
+
+            /* Add styles for search input */
+            .search-bar input {
+                width: 200px;
+                padding: 8px;
+                border-radius: 4px;
+                border: 1px solid #ccc;
+                margin-right: 10px;
+            }
+        </style>
+    </head>
+    <body>
+
+
+        
+        <div class="navbar">
+            <div class="search-bar" style="padding:3px;">
+                <input  class="search-input" type="text" id="searchInput" placeholder="Search categories...">
+                <button style="font-size:25px; background-color:unset; color:black; padding:unset;"><i class='bx bx-search'></i></button>
+            </div>
+
+            <div class="username">
+                <p>Admin</p> <!-- Display the logged-in username -->
+            </div>
+        </div>
+
+        <div class="container" style="display:unset; margin:50px;">
+            <h1 style="text-align: inherit; margin-bottom: 30px;">Categories</h1>
+            <table id="categoriesTable"  style="display:block; max-height: 400px; overflow-y: auto; width: 100%; border-collapse: collapse; margin: 20px auto; font-family: Arial, sans-serif; background-color: #fff; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); border-radius: 8px;">
+                <thead>
+                    <tr style="background-color: #bde0fe;">
+                        <th style="width: 10%; padding: 12px; text-align: left; border-bottom: 1px solid #ddd; font-weight: 600;">Sr No</th>
+                        <th style="width: 30%; padding: 12px; text-align: left; border-bottom: 1px solid #ddd; font-weight: 600;">Name</th>
+                        <th style="width: 40%; padding: 12px; text-align: left; border-bottom: 1px solid #ddd; font-weight: 600;">Description</th>
+                        <th style="width: 40%; padding: 12px; text-align: left; border-bottom: 1px solid #ddd; font-weight: 600;">Image</th>
+                        <th style="width: 20%; padding: 12px; text-align: left; border-bottom: 1px solid #ddd; font-weight: 600;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody >
+                    {% for obj in data %}
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 12px;">{{ obj.0 }}</td>
+                        <td style="padding: 12px;">{{ obj.1 }}</td>
+                        <td style="padding: 12px;">{{ obj.2 }}</td>
+                        <td style="padding: 12px;"><img style="height:70px; width:70px;" src="{{MEDIA_ROOT}}/uploads/{{obj.3}}"></td>
+                        <td style="padding: 12px; display: flex; gap: 10px;">
+                            <form action="{% url 'admin_categories' %}" method="POST" style="margin: 0;">
+                                {% csrf_token %}
+                                <input type="hidden" name="edit" value="{{ obj.0 }}"> 
+                                <button type="submit" style="padding: 8px 16px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                    Edit
+                                </button>
+                            </form>
+                            
+                            <form action="{% url 'admin_categories' %}" method="POST" style="margin: 0;">
+                                {% csrf_token %}
+                                <input type="hidden" name="delete" value="{{ obj.0 }}"> 
+                                <button type="submit" style="padding: 8px 16px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                    Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="mt-4 d-inline-flex">
+                <a href="{% url 'admin_add_category' %}"><button type="button" class="btn btn-primary btn-md">Add Category</button></a>
+            </div>
+            
+        </div>
+
+        <script>
+            // Search functionality
+            document.getElementById('searchInput').addEventListener('input', function() {
+                var input = this.value.toLowerCase();
+                var rows = document.querySelectorAll('#categoriesTable tbody tr');
+                rows.forEach(function(row) {
+                    var nameCell = row.cells[1].textContent.toLowerCase(); // The Name column
+                    var descriptionCell = row.cells[2].textContent.toLowerCase(); // The Description column
+                    
+                    if (nameCell.includes(input) || descriptionCell.includes(input)) {
+                        row.style.display = ''; // Show the row
+                    } else {
+                        row.style.display = 'none'; // Hide the row
+                    }
+                });
+            });
+        </script>
+
+    {% endblock content %}
+    </body>
+</html>

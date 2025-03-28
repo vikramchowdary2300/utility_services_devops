@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends "user_navbar.html" %}
+
+{% block content %}
+<div class="container" style="max-width:unset; height:100vh; width:100%; ;">
+    <h1 class="text-center">Subscriptions</h1>
+
+    <!-- Orders Table -->
+    <table id="categoriesTable" style="width: 100%; border-collapse: collapse; margin: 20px auto; font-family: Arial, sans-serif; background-color: #fff; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); border-radius: 8px;">
+        <thead>
+            <tr style="background-color: #bde0fe;">
+                <th style="width: 10%; padding: 12px; text-align: left; border-bottom: 1px solid #ddd; font-weight: 600;">Sr No</th>
+                <th style="width: 20%; padding: 12px; text-align: left; border-bottom: 1px solid #ddd; font-weight: 600;">Pro. Name</th>
+                <th style="width: 20%; padding: 12px; text-align: left; border-bottom: 1px solid #ddd; font-weight: 600;">Service</th>
+                <th style="width: 20%; padding: 12px; text-align: left; border-bottom: 1px solid #ddd; font-weight: 600;">From date</th>
+                <th style="width: 15%; padding: 12px; text-align: left; border-bottom: 1px solid #ddd; font-weight: 600;">To date</th>
+                <th style="width: 10%; padding: 12px; text-align: left; border-bottom: 1px solid #ddd; font-weight: 600;">Bill</th>
+                <th style="width: 20%; padding: 12px; text-align: left; border-bottom: 1px solid #ddd; font-weight: 600;">Address</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for obj in subscriptions %}
+            <tr class="order-row" style="border-bottom: 1px solid #ddd;">
+                <td style="padding: 12px;">{{ obj.subscription.0 }}</td>
+                <td style="padding: 12px;">{{ obj.sp_name }}</td>
+                <td style="padding: 12px;">{{ obj.service_name }}</td>
+                <td style="padding: 12px;">{{ obj.subscription.4 }}</td>
+                <td style="padding: 12px;">{{ obj.subscription.5 }}</td>
+                <td style="padding: 12px;">{{ obj.subscription.7 }}</td>
+                <td style="padding: 12px;">{{ obj.subscription.6 }}</td>
+            </tr>
+            {% endfor %}
+
+        </tbody>
+    </table>
+</div>
+{% endblock %}

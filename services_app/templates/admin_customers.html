@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+    {% extends 'admin_sidebar.html' %}
+    {% block content %}
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Customers</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'css/animations.css' %}">  
+        <link rel="stylesheet" href="{% static 'css/main.css' %}">  
+        <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+
+        <link href='https://cdn.jsdelivr.net/npm/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
+
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 0;
+            }
+
+            h1 {
+                text-align: center;
+                font-size: 24px;
+                font-weight: 600;
+                color: #333;
+            }
+            
+            .actions button {
+                margin-right: 10px;
+                padding: 8px 16px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                color: #fff;
+            }
+            .edit-btn {
+                background-color: #28a745;
+            }
+            .delete-btn {
+                background-color: #dc3545;
+            }
+            .edit-btn:hover, .delete-btn:hover {
+                opacity: 0.9;
+            }
+
+            .content{
+                padding:20px;
+            }
+
+            
+            .navbar {
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px 20px;
+                background-color: #142333;
+                color: white;
+                position: sticky;
+                top: 0;
+                z-index: 1000;
+                border: 2px;
+                border-radius: 10px;
+            }
+
+            .navbar .username {
+                font-weight: bold;
+                font-size: 16px;
+            }
+        </style>
+    </head>
+    <body>
+
+        <div class="navbar">
+            <div class="search-bar" style="padding:3px;">
+                <input id="searchInput" class="search-input" type="text" placeholder="Search...">
+                <button  style="font-size:25px; background-color:unset; color:black; padding:unset;"><i class='bx bx-search'></i></button>
+            </div>
+
+            <div class="username">
+                <p>Admin</p> <!-- Display the logged-in username -->
+            </div>
+        </div>
+
+
+        <div class="container" style="display:unset; margin:50px;">
+            <h1 style="text-align: inherit; margin-bottom: 30px;">Customers</h1>
+            <table id="categoriesTable" style=" display:block; max-height: 400px; overflow-y: auto; width: 100%; border-collapse: collapse; margin: 20px auto; font-family: Arial, sans-serif; background-color: #fff; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); border-radius: 8px;">
+                <thead>
+                    <tr style="background-color: #bde0fe;">
+                        <th style="width: 20%; padding: 12px; text-align: left; border-bottom: 1px solid #ddd; font-weight: 600;">Sr No</th>
+                        <th style="width: 20%; padding: 12px; text-align: left; border-bottom: 1px solid #ddd; font-weight: 600;">Name</th>
+                        <th style="width: 40%; padding: 12px; text-align: left; border-bottom: 1px solid #ddd; font-weight: 600;">Email</th>
+                        <th style="width: 40%; padding: 12px; text-align: left; border-bottom: 1px solid #ddd; font-weight: 600;">Phone</th>
+                        <th style="width: 30%; padding: 12px; text-align: left; border-bottom: 1px solid #ddd; font-weight: 600;">City</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for obj, city in data%}
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 12px;">{{obj.0}}</td>
+                        <td style="padding: 12px;">{{obj.1}}</td>
+                        <td style="padding: 12px;">{{obj.4}}</td>
+                        <td style="padding: 12px;">{{obj.5}}</td>
+                        <td style="padding: 12px;">{{city}}</td>
+                    </tr>
+                    {% endfor %}
+                    <!-- Additional rows can be added here -->
+                </tbody>
+            </table>
+            
+        </div>
+        <script src="" async defer></script>
+
+    
+        <script>
+            // Search functionality
+            document.getElementById('searchInput').addEventListener('input', function() {
+                var input = this.value.toLowerCase();
+                var rows = document.querySelectorAll('#categoriesTable tbody tr');
+                rows.forEach(function(row) {
+                    var nameCell = row.cells[1].textContent.toLowerCase(); // The Name column
+                    var descriptionCell = row.cells[2].textContent.toLowerCase(); // The Description column
+                    
+                    if (nameCell.includes(input) || descriptionCell.includes(input)) {
+                        row.style.display = ''; // Show the row
+                    } else {
+                        row.style.display = 'none'; // Hide the row
+                    }
+                });
+            });
+        </script>
+    {% endblock content %}
+    </body>
+</html>

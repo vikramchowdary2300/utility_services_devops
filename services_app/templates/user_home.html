@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends "user_navbar.html" %}
+
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Utilify Home</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        {% load static %}
+        .banner {
+            background: url("{% static 'images/newbanner2.jpg' %}") no-repeat center center;
+            background-size: cover;
+            color: white;
+            height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .banner h1{
+            font-size: 3rem;
+            font-weight: bold;
+        }
+        .banner-text{
+            margin-bottom:35vh;
+        }
+
+        .card img {
+            height: 150px;
+            object-fit: cover;
+        }
+        .card {
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-bottom:15px;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        #search-bar-container {
+            text-align: center;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+        }
+        #search-bar {
+            width:50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #search-input {
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #007bff;
+            border-radius: 30px;
+            outline: none;
+            transition: 0.3s;
+            width: 100%;
+            margin-right: 10px;
+        }
+        #search-input:focus {
+            border-color: #0056b3;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+        #search-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #search-button:hover {
+            background-color: #0056b3;
+        }
+        .btn-primary:hover {
+            background-color: #fa9500;
+            border-color: #fa9500;
+        }
+    </style>
+</head>
+
+<body>
+    
+    <div class="banner">
+        <div class="banner-text">
+            <h1>Welcome to Utilify</h1>
+            <p>Your one-stop solution for all utility needs</p>
+        </div>
+    </div>
+
+    <div class="container" style="background-color:#ffffff; max-width:unset; width:100%; height: fit-content; margin-top:unset; margin-bottom:unset;">
+        <h2 style="padding-top:30px;" class="text-center mb-4"> Our Services </h2>
+
+        
+        <div id="search-bar-container">
+            <div id="search-bar">
+                <input type="text" id="search-input" class="form-control" placeholder="Search services..." onkeyup="searchServices()">
+                <button id="search-button" onclick="searchServices()">Search</button>
+            </div>
+        </div>
+
+        <div class="row" id="services-container">
+            {% for obj in data%}
+            <div class="col-md-3 service-card">
+                <div class="card text-center">
+                    <img src="{{MEDIA_ROOT}}/uploads/{{obj.3}}" class="card-img-top" alt="Electricity Service">
+                    <div class="card-body">
+                        <h5 class="card-title">{{obj.1}}</h5>
+                        <p class="card-text">{{obj.2}}</p>
+
+                        <form action="{% url 'services' %}" method="POST" style="margin: 0;">
+                            {% csrf_token %}
+                            <input type="hidden" name="category_id" value="{{ obj.0 }}">
+                            <button type="submit" class="btn btn-primary">Book Service</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        function searchServices() {
+            var input, filter, servicesContainer, serviceCards, title, i, txtValue;
+            input = document.getElementById('search-input');
+            filter = input.value.toUpperCase();
+            servicesContainer = document.getElementById('services-container');
+            serviceCards = servicesContainer.getElementsByClassName('service-card');
+
+            for (i = 0; i < serviceCards.length; i++) {
+                title = serviceCards[i].getElementsByClassName("card-title")[0];
+                if (title) {
+                    txtValue = title.textContent || title.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        serviceCards[i].style.display = "";
+                    } else {
+                        serviceCards[i].style.display = "none";
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+{% endblock content %}

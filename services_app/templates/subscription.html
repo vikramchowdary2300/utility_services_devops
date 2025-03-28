@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% extends "user_navbar.html" %}
+    {% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    {% load static %}
+
+    <div class="container my-5">
+        <h2 class="mb-4 text-center">Subscribe to Service</h2>
+        
+        
+        <!-- Service and Provider Details -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">{{service_name}}</h5>
+                <p class="card-text">{{service_description}}</p>
+                <p class="card-text"><strong>Provider: </strong>{{data.1}}</p>
+                <p class="card-text"><strong>Price: </strong> ${{price.0}} per day</p>
+            </div>
+        </div>
+
+        <!-- Subscription Form -->
+        <div class="card">
+            <div class="card-body">
+                <form action="{% url 'payment' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="startDate" class="form-label">Start Date</label>
+                        <input type="date" class="form-control" id="startdate" name="startdate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="endDate" class="form-label">End Date</label>
+                        <input type="date" class="form-control" id="enddate" name="enddate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <input type="text" class="form-control" id="address" name="address" required>
+                    </div>
+                    <input type="hidden" value="{{ data.0 }}" name="sp_id">
+                    <input type="hidden" value="{{ service_id }}" name="service_id">
+                    <input type="hidden" value="{{ price.0 }}" name="price">
+
+                    <button type="submit" class="btn btn-primary w-100">Subscribe</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{%endblock content%}
+    <!-- Bootstrap JS (optional) -->
+    <!-- Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

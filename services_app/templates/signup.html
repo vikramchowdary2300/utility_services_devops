@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup - Utility Services</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .form-container {
+            max-width: 700px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-container .form-group {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+
+<body style="background-color:#264653">
+    <div class="container">
+        <div class="form-container">
+            <h2>Signup</h2>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" class="form-control" id="username" name="username" placeholder="Enter username" pattern="^[a-zA-Z0-9_]{3,15}$" title="Username should be 3-15 characters long and can include letters, numbers, and underscores." required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="first_name">First Name</label>
+                        <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Enter first name" pattern="^[A-Za-z]+$" title="First name should contain only letters." required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="last_name">Last Name</label>
+                        <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Enter last name" pattern="^[A-Za-z]+$" title="Last name should contain only letters." required>
+                    </div>
+                </div>
+            
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="email">Email address</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="phone">Phone no.</label>
+                        <input type="tel" class="form-control" id="phone" name="phone" placeholder="Enter phone no." pattern="\d{10}" title="Phone number should be exactly 10 digits." required>
+                    </div>
+                </div>
+            
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="city">City</label>
+                        <input type="text" class="form-control" id="city" name="city" placeholder="Enter city" required>
+                    </div>
+            
+                    <div class="form-group col-md-6">
+                        <label for="role">Select Type</label>
+                        <select class="form-control" id="usertype" name="usertype" required>
+                            <option value="customer">Customer</option>
+                            <option value="professional">Professional</option>
+                        </select>
+                    </div>
+                </div>
+            
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" minlength="6" title="Password should be at least 6 characters long." required>
+                </div>
+            
+                <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
+                <p class="text-center mt-3">Already have an account? <a href="{% url 'login' %}">Login</a></p>
+            </form>
+            
+        </div>
+    </div>
+
+    <script>
+        // Basic password confirmation check
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+            if (password !== confirmPassword) {
+                alert("Passwords do not match!");
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+{% endblock content %}
