@@ -15,7 +15,6 @@ phases:
       - pip install --upgrade pip
       - pip install -r requirements.txt pylint
       - sudo yum clean all
-      - sudo yum update -y --skip-broken
       - sudo yum install -y jq
       - sudo yum remove -y java-11-openjdk
       - sudo yum install -y java-17-amazon-corretto
