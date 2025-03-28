@@ -16,6 +16,9 @@ phases:
       - echo "PRE-Build stage"
       - python --version
       - python manage.py collectstatic --noinput
+      - echo "PyLint Started"
+      - pylint utility_services/**/*.py || true
+      - echo "pre build stage completed - PyLint Completed!!"
 
   build:
     commands:
