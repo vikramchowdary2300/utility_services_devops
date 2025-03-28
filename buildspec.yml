@@ -14,8 +14,8 @@ phases:
       - echo "<-- RUNTIME EXECUTION -->"
       - pip install --upgrade pip
       - pip install -r requirements.txt pylint
-      - yum update -y
-      - yum install -y jq
+      - sudo yum update -y
+      - sudo yum install -y jq
       - sudo yum remove -y java-11-openjdk
       - sudo yum install -y java-17-amazon-corretto
       - java -version
