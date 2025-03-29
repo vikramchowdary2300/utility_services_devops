@@ -13,9 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 from django.core.management.utils import get_random_secret_key
-import boto3
-import json
-import os
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -78,38 +76,15 @@ WSGI_APPLICATION = "utility_services.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-AWS_REGION = 'ap-southeast-2'
-SECRET_NAME = 'prod/sonar/x24112682'
-
-def get_secret():
-    # Create a session with AWS
-    session = boto3.session.Session()
-    client = session.client(
-        service_name='secretsmanager',
-        region_name=AWS_REGION
-    )
-
-    try:
-        # Get secret value
-        response = client.get_secret_value(SecretId=SECRET_NAME)
-        secret_data = json.loads(response['SecretString'])
-        return secret_data
-    except Exception as e:
-        print(f"Error fetching secret: {e}")
-        return None
-    
-secrets = get_secret()
-if secrets is None:
-    raise ValueError("Failed to load secrets from AWS Secrets Manager. Check IAM permissions, secret name, or AWS region.")
 
 DATABASES = {
     'default': {
         'ENGINE': 'mysql.connector.django',
-        'NAME': secrets.get('DB_NAME', ''),
-        'USER': secrets.get('DB_USER', ''),
-        'PASSWORD': secrets.get('DB_PASSWORD', ''),
-        'HOST': secrets.get('DB_HOST', ''),
-        'PORT': secrets.get('DB_PORT', '3306'),
+        'NAME': os.environ.get('DB_NAME', ''),       # DB name
+        'USER': os.environ.get('DB_USER', ''),       # DB username
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),  # DB password
+        'HOST': os.environ.get('DB_HOST', ''),       # DB host
+        'PORT': os.environ.get('DB_PORT', '3306'),   # DB port (default: 3306)
     }
 }
 
@@ -148,6 +123,5 @@ SESSION_COOKIE_AGE = 1800
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
-
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
