@@ -99,6 +99,8 @@ def get_secret():
         return None
     
 secrets = get_secret()
+if secrets is None:
+    raise ValueError("Failed to load secrets from AWS Secrets Manager. Check IAM permissions, secret name, or AWS region.")
 
 DATABASES = {
     'default': {
