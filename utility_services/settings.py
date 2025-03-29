@@ -12,22 +12,24 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
-
+from django.core.management.utils import get_random_secret_key
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+SECRET_KEY = get_random_secret_key()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-=^_n(j$41d0c5q34q94&ods3a8ll(=_%e(=-a7^=4rk^6dk*3v"
+SECRET_KEY = get_random_secret_key()
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['x24112682-bookingapp-devops.eba-qbftmn5g.ap-southeast-2.elasticbeanstalk.com/','*']
+ALLOWED_HOSTS = [
+    'x24112682-bookingapp-devops.eba-qbftmn5g.ap-southeast-2.elasticbeanstalk.com/','*'
+    ]
 
 
 # Application definition
@@ -76,27 +78,6 @@ WSGI_APPLICATION = "utility_services.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-""" DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-} """
-
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'mysql.connector.django',
-        'NAME': 'utility_services_db',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': 'localhost',  # Set to your MySQL server's IP address or hostname
-        'PORT': '3306',       # Default MySQL port
-    }
-}
-
-
-
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
@@ -125,15 +106,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-
-
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
 SESSION_COOKIE_AGE = 1800  
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # Default primary key field type
