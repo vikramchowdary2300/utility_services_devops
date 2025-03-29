@@ -13,7 +13,9 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 from django.core.management.utils import get_random_secret_key
-
+import boto3
+import json
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -76,17 +78,39 @@ WSGI_APPLICATION = "utility_services.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+AWS_REGION = 'ap-southeast-2'
+SECRET_NAME = 'prod/sonar/x24112682'
+
+def get_secret():
+    # Create a session with AWS
+    session = boto3.session.Session()
+    client = session.client(
+        service_name='secretsmanager',
+        region_name=AWS_REGION
+    )
+
+    try:
+        # Get secret value
+        response = client.get_secret_value(SecretId=SECRET_NAME)
+        secret_data = json.loads(response['SecretString'])
+        return secret_data
+    except Exception as e:
+        print(f"Error fetching secret: {e}")
+        return None
+    
+secrets = get_secret()
 
 DATABASES = {
     'default': {
         'ENGINE': 'mysql.connector.django',
-        'NAME': 'x24112682-utility-rds',
-        'USER': 'admin',
-        'PASSWORD': 'x24112682-utility-rds',
-        'HOST': 'x24112682-utility-rds.cid6gtv3k6ak.ap-southeast-2.rds.amazonaws.com',  # Set to your MySQL server's IP address or hostname
-        'PORT': '3306',# Default MySQL port
+        'NAME': secrets.get('DB_NAME', ''),
+        'USER': secrets.get('DB_USER', ''),
+        'PASSWORD': secrets.get('DB_PASSWORD', ''),
+        'HOST': secrets.get('DB_HOST', ''),
+        'PORT': secrets.get('DB_PORT', '3306'),
     }
 }
+
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
