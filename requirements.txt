@@ -2,3 +2,4 @@ django==4.2
 django-storages==1.14.1
 mysql-connector-python
 boto3
+pymysql
