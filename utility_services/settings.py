@@ -9,7 +9,6 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
 from pathlib import Path
 import os
 from django.core.management.utils import get_random_secret_key
@@ -30,7 +29,6 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'x24112682-bookingapp-devops.eba-qbftmn5g.ap-southeast-2.elasticbeanstalk.com/','*'
     ]
-
 
 # Application definition
 
@@ -77,14 +75,43 @@ WSGI_APPLICATION = "utility_services.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
+""" DATABASES = {
     'default': {
         'ENGINE': 'mysql.connector.django',
         'NAME': os.environ.get('DB_NAME', ''),       # DB name
         'USER': os.environ.get('DB_USER', ''),       # DB username
         'PASSWORD': os.environ.get('DB_PASSWORD', ''),  # DB password
         'HOST': os.environ.get('DB_HOST', ''),       # DB host
-        'PORT': os.environ.get('DB_PORT', '3306'),   # DB port (default: 3306)
+        'PORT': os.environ.get('DB_PORT', '3306'),
+    }
+} """
+
+""" DATABASES = {
+    'default': {
+        'ENGINE': 'mysql.connector.django',
+        'NAME': 'x24112682-utility-rds',       
+        'USER': 'admin',       
+        'PASSWORD': 'x24112682-utility-rds',  
+        'HOST': 'x24112682-utility-rds.cid6gtv3k6ak.ap-southeast-2.rds.amazonaws.com',      
+        'PORT': 3306,
+    }
+} """
+
+
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'x24112682-utility-rds',
+        'USER': 'admin',
+        'PASSWORD': 'x24112682-utility-rds',
+        'HOST': 'x24112682-utility-rds.cid6gtv3k6ak.ap-southeast-2.rds.amazonaws.com',
+        'PORT': '3306',
+        'TEST': {
+            'NAME': 'test_utility',  # Use a different name for the test database
+            'CHARSET': 'utf8mb4',  # Ensures utf8 support (optional but recommended)
+            'COLLATION': 'utf8mb4_unicode_ci',
+        },
     }
 }
 

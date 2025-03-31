@@ -566,7 +566,7 @@ class user_subscriptions(View):
         #return render(request, 'user_subscriptions.html')
     def post(self, request, *args, **kwargs):
         return render(request, 'user_subscriptions.html')
-        
+
 class signup(View):
     def get(self, request, *args, **kwargs):
         return render(request, template_name= 'signup.html')
