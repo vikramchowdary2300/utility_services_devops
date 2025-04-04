@@ -4,7 +4,7 @@ env:
     LOGIN: prod/sonar/x24112682:sonartoken
     HOST: prod/sonar/x24112682:HOST
     Organization: prod/sonar/x24112682:Organization
-    Project: prod/sonar/x24112682:Project
+    Project: vikramchowdary2300_utility_services_devops
 
 env:
   variables:
@@ -42,7 +42,6 @@ phases:
       - export PATH=$PATH:./sonar-scanner-5.0.1.3006-linux/bin/
       - sonar-scanner --version
       - echo "pre build stage completed"
-
 
   build:
     commands:
