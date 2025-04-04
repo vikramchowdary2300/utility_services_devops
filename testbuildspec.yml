@@ -4,7 +4,7 @@ env:
     LOGIN: prod/sonar/x24112682:sonartoken
     HOST: prod/sonar/x24112682:HOST
     Organization: prod/sonar/x24112682:Organization
-    Project: vikramchowdary2300_utility_services_devops
+    Project: prod/sonar/x24112682:Project
 
 env:
   variables:
@@ -50,9 +50,9 @@ phases:
       - python manage.py test
       - echo "Django Test Cases Completed!!"
       - echo "Sonar Cloud Started"
-      - sonar-scanner -Dsonar.login=$LOGIN -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=$Project -Dsonar.organization=$Organization -Dsonar.coverage.exclusions=**/* || true
+      - sonar-scanner -Dsonar.login=$LOGIN -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=vikramchowdary2300_utility_services_devops -Dsonar.organization=$Organization -Dsonar.coverage.exclusions=**/* || true
       - sleep 5
-      - curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=$Project >result.json
+      - curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=vikramchowdary2300_utility_services_devops >result.json
       - cat result.json
       - echo "Build stage completed!"
 
