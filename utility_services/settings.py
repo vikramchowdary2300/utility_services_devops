@@ -77,7 +77,7 @@ WSGI_APPLICATION = "utility_services.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-""" DATABASES = {
+DATABASES = {
     'default': {
         'ENGINE': 'mysql.connector.django',
         'NAME': os.environ.get('DB_NAME', ''),       # DB name
@@ -86,7 +86,7 @@ WSGI_APPLICATION = "utility_services.wsgi.application"
         'HOST': os.environ.get('DB_HOST', ''),       # DB host
         'PORT': os.environ.get('DB_PORT', '3306'),
     }
-} """
+}
 
 """ DATABASES = {
     'default': {
@@ -100,7 +100,7 @@ WSGI_APPLICATION = "utility_services.wsgi.application"
 } """
 
 
-
+""" 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -115,7 +115,7 @@ DATABASES = {
             'COLLATION': 'utf8mb4_unicode_ci',
         },
     }
-}
+} """
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
