@@ -47,6 +47,7 @@ phases:
   build:
     commands:
       - echo "Build Stage"
+      - echo $Project
       - echo "Django Test Cases Started"
       - python manage.py test
       - echo "Django Test Cases Completed!!"
