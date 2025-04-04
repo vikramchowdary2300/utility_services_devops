@@ -113,18 +113,18 @@
                         <td style="padding: 12px;">{{category_name}}</td>
                         <td style="padding: 12px;">{{sp_service.0}}</td>
                         <td style="padding: 12px;">{{sp_service.1}}</td>
-                        <td style="padding: 12px;">₹{{obj.4}}</td>
+                        <td style="padding: 12px;">€{{obj.4}}</td>
                         <td style="padding: 12px;"><img style="height:70px; width:70px;" src="{{MEDIA_ROOT}}/uploads/{{sp_service.2}}"></td>
 
                         <td style="padding: 12px; display: flex; gap: 10px;">
                             <!-- Edit Form -->
-                            <form action="{% url 'sp_services' %}" method="POST" style="margin: 0;">
+                            <!-- <form action="{% url 'sp_services' %}" method="POST" style="margin: 0;">
                                 {% csrf_token %}
-                                <input type="hidden" name="edit" value="{{ obj.0 }}"> <!-- Pass the service ID -->
+                                <input type="hidden" name="edit" value="{{ obj.0 }}"> 
                                 <button type="submit" style="padding: 8px 16px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
                                     Edit
                                 </button>
-                            </form>
+                            </form> -->
                             
                             <!-- Delete Form -->
                             <form action="{% url 'sp_services' %}" method="POST" style="margin: 0;">

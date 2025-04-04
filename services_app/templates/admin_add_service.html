@@ -97,7 +97,7 @@
                     {% endfor %}
                 </select>
 
-                <input type="hidden" value={{ service.0 }} name="service_id">
+                <input type="hidden" value="{{ service.0 }}" name="service_id">
 
                 <label for="name">Service Name</label>
                 <input type="text" id="name" name="name" value="{{ service.2 }}" placeholder="Enter service name" required>
@@ -106,7 +106,7 @@
                 <textarea id="description"  name="description" rows="4" placeholder="Enter category description" required>{{ service.3 }}</textarea>
 
                 <label for="description">Select image</label>
-                <input type="file" value={{ service.4 }} id="image" name="image" placeholder="Select image" required><br><br>
+                <input type="file" value="{{ service.4 }}" id="image" name="image" placeholder="Select image" required><br><br>
 
                 <button class="btn btn-primary btn-md" type="submit">Add Service</button>
             </form>

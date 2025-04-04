@@ -923,9 +923,123 @@ class sp_services(View):
             except Exception as e:
                 print(f"Error: {e}")
 
+# class sp_add_service(View):
+#     def get(self, request, *args, **kwargs):
+        
+#         username = request.session.get("username")
+#         if not username:
+#             return redirect('login')
+
+#         sp_service_id = kwargs.get("service_id")
+
+#         conn = create_connection()
+#         cur = conn.cursor()
+
+#         cur.execute("SELECT c_id, s_id, price FROM service_provider_services")
+#         sp_services = cur.fetchall()
+
+#         if len(sp_services) > 0:
+#             service_data = sp_services[0]
+#             print("sp_services[0]: ", service_data)
+#             print("Service ID: ", service_data[0])  
+#             print("Service Name: ", service_data[1])  
+#             print("Price: ", service_data[2])
+#         else:
+#             print("No services available for this category.")
+
+
+#         sp_services = [list(category) for category in sp_services]
+#         print("sp_services[1] : ", sp_services)
+
+#         print("sp_services[1] : ", service_data[1])
+
+#         conn = create_connection()
+#         cur = conn.cursor()
+
+#         cur.execute("SELECT c_id, c_name FROM mstr_category")
+#         categories = cur.fetchall()
+
+#         cur.execute("SELECT s_id FROM service_provider_services WHERE id = %s", (sp_service_id,))
+#         service = cur.fetchone()
+        
+#         category_name = "No category found"
+
+        
+#         if service:
+#             cat_id = service_data[0]
+#             print("Service Category ID: ", cat_id)
+        
+#             cur.execute("SELECT c_name FROM mstr_category WHERE c_id = %s", (cat_id,))
+#             category_name = cur.fetchone()
+#             print("Category Name:", category_name)
+
+
+#         categories = [list(category) for category in categories]
+
+#         print("------------------->  CATEGORIES : ", categories[0])
+
+#         conn.close()
+        
+#         return render(request, 'sp_add_service.html', context={
+#             "categories": categories,
+#             "service": service,
+#             "cat_name": category_name[0] if category_name else "No category found",
+#             "price": service_data[2] if service_data else "No service available",
+#         })
+
+
+#     def post(self, request, *args, **kwargs):
+        
+#         username = request.session.get("username")
+#         if not username:
+#             return redirect('login')
+        
+#         service_id = request.POST.get("sp_service_id")
+        
+#         sp_id = request.session.get('user_id', None)
+
+#         if service_id:
+
+#             s_id = request.POST.get("service_id")
+#             c_id = request.POST.get("category_id")
+#             price = request.POST.get("price")
+
+#             try:
+#                 conn = create_connection()
+#                 cur = conn.cursor()
+#                 cur.execute("""
+#                     update service_provider_services set s_id = %s, c_id = %s, price = %s
+#                     where s_id = %s
+#                 """, [int(s_id), int(c_id), int(price), service_id])
+#                 conn.commit()
+#                 return redirect('sp_services')
+#             except Exception as e:
+#                 print(f"Error: {e}")
+
+
+#         category_id = request.POST.get("category_id")
+#         service_id = request.POST.get("service_id")
+#         price = request.POST.get("price")
+
+#         try:
+#             conn = create_connection()
+#             cur = conn.cursor()
+            
+#             cur.execute("""
+#                 INSERT INTO service_provider_services (service_provider_id, c_id, s_id, price)
+#                 VALUES (%s, %s, %s, %s)
+#             """, [int(sp_id), int(category_id), int(service_id), int(price)])
+            
+#             conn.commit()
+#             return redirect('sp_services')
+
+#         except Exception as e:
+#             print(f"Error: {e}")
+#             return render(request, 'sp_add_service.html', {'message': 'An error occurred while adding the category'})
+
+
 class sp_add_service(View):
     def get(self, request, *args, **kwargs):
-        
         username = request.session.get("username")
         if not username:
             return redirect('login')
@@ -940,66 +1054,45 @@ class sp_add_service(View):
 
         if len(sp_services) > 0:
             service_data = sp_services[0]
-            print("sp_services[0]: ", service_data)
-            print("Service ID: ", service_data[0])  
-            print("Service Name: ", service_data[1])  
-            print("Price: ", service_data[2])
         else:
-            print("No services available for this category.")
-
+            service_data = [None, None, None]  # Default values to avoid UnboundLocalError
 
         sp_services = [list(category) for category in sp_services]
-        print("sp_services[1] : ", sp_services)
 
-        print("sp_services[1] : ", service_data[1])
-
-        conn = create_connection()
-        cur = conn.cursor()
-
-        cur.execute("SELECT c_id, c_name FROM mstr_category")
+        cur.execute("SELECT DISTINCT c_id, c_name FROM mstr_category")
         categories = cur.fetchall()
-
+        
         cur.execute("SELECT s_id FROM service_provider_services WHERE id = %s", (sp_service_id,))
         service = cur.fetchone()
         
         category_name = "No category found"
-
-        
         if service:
             cat_id = service_data[0]
-            print("Service Category ID: ", cat_id)
-        
             cur.execute("SELECT c_name FROM mstr_category WHERE c_id = %s", (cat_id,))
-            category_name = cur.fetchone()
-            print("Category Name:", category_name)
-
-
+            category = cur.fetchone()
+            if category:
+                category_name = category[0]
+        
         categories = [list(category) for category in categories]
-
-        print("------------------->  CATEGORIES : ", categories[0])
-
+        
         conn.close()
         
         return render(request, 'sp_add_service.html', context={
             "categories": categories,
             "service": service,
-            "cat_name": category_name[0] if category_name else "No category found",
-            "price": service_data[2]
+            "cat_name": category_name,
+            "price": service_data[2] if service_data[2] is not None else "No service available",
         })
 
-
     def post(self, request, *args, **kwargs):
-        
         username = request.session.get("username")
         if not username:
             return redirect('login')
         
         service_id = request.POST.get("sp_service_id")
-        
         sp_id = request.session.get('user_id', None)
 
         if service_id:
-
             s_id = request.POST.get("service_id")
             c_id = request.POST.get("category_id")
             price = request.POST.get("price")
@@ -1008,14 +1101,15 @@ class sp_add_service(View):
                 conn = create_connection()
                 cur = conn.cursor()
                 cur.execute("""
-                    update service_provider_services set s_id = %s, c_id = %s, price = %s
-                    where s_id = %s
+                    UPDATE service_provider_services 
+                    SET s_id = %s, c_id = %s, price = %s
+                    WHERE s_id = %s
                 """, [int(s_id), int(c_id), int(price), service_id])
                 conn.commit()
+                conn.close()
                 return redirect('sp_services')
             except Exception as e:
                 print(f"Error: {e}")
-
 
         category_id = request.POST.get("category_id")
         service_id = request.POST.get("service_id")
@@ -1024,18 +1118,18 @@ class sp_add_service(View):
         try:
             conn = create_connection()
             cur = conn.cursor()
-            
             cur.execute("""
                 INSERT INTO service_provider_services (service_provider_id, c_id, s_id, price)
                 VALUES (%s, %s, %s, %s)
             """, [int(sp_id), int(category_id), int(service_id), int(price)])
-            
             conn.commit()
+            conn.close()
             return redirect('sp_services')
-
         except Exception as e:
             print(f"Error: {e}")
             return render(request, 'sp_add_service.html', {'message': 'An error occurred while adding the category'})
+
+
 
 class fetch_services(View):
     def get(self, request, *args, **kwargs):
@@ -1123,7 +1217,8 @@ class admin_categories(View):
                 cur = conn.cursor()
                 cur.execute("select c_id from mstr_service where c_id = %s",(int(delete),))
                 d = cur.fetchall()
-                if d is not None:
+                print("----------------->> DELETE CAT : ",d)
+                if len(d) > 0:
                     return HttpResponse("Category is being used can not be deleted")
                 else:
                     cur = conn.cursor()
@@ -1416,7 +1511,7 @@ class admin_add_service(View):
         categories = cur.fetchall()
         
 
-        category_name = "No category found"
+        category_name = ""
 
         cur.execute("SELECT * FROM mstr_service WHERE s_id = %s", [service_id])
         service = cur.fetchone()
@@ -1435,7 +1530,7 @@ class admin_add_service(View):
         return render(request, 'admin_add_service.html', context={
             "categories": categories,
             "service": service,
-            "cat_name": category_name[0] if category_name else "No category found"
+            "cat_name": category_name[0] if category_name else "Select Category"
         })
 
 

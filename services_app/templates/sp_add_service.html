@@ -6,12 +6,12 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>Add Service</title>
-        <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         {% load static %}
         <link rel="stylesheet" href="{% static 'css/animations.css' %}">
         <link rel="stylesheet" href="{% static 'css/main.css' %}">
         <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+
         <style>
             body {
                 font-family: Arial, sans-serif;
@@ -79,69 +79,59 @@
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
         <script>
-            console.log("Script is loaded and running!");
-
             document.addEventListener('DOMContentLoaded', function() {
-                // Fetch categories from Django context
                 var categories = {% autoescape off %}{{ categories|safe }}{% endautoescape %};
                 var categoryDropdown = document.getElementById('category-dropdown');
                 var serviceDropdown = document.getElementById('service-dropdown');
-            
-                // Log the categories to debug
-                console.log("Categories loaded from Django context:", categories);
-            
+
+                // Clear existing options to prevent duplication
+                categoryDropdown.innerHTML = '';
+
+                // Default option
+                var defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = 'Select a category';
+                categoryDropdown.appendChild(defaultOption);
+
                 // Populate category dropdown
                 categories.forEach(function(category) {
                     var option = document.createElement('option');
-                    option.value = category[0];  // category ID (category[0]) - This should be a number
-                    option.textContent = category[1];  // category name (category[1])
+                    option.value = category[0];
+                    option.textContent = category[1];
                     categoryDropdown.appendChild(option);
-            
-                    console.log("Populated category - ID: " + category[0] + ", Name: " + category[1]);
                 });
-            
-                // Category change event listener (using jQuery for AJAX)
+
+                // Fetch services dynamically based on selected category
                 categoryDropdown.addEventListener('change', function() {
-                    var selectedCategoryId = this.value;  // Get the selected category ID
-            
-                    console.log("Category selected with ID:", selectedCategoryId);
-            
+                    var selectedCategoryId = this.value;
+
                     if (selectedCategoryId === '') {
-                        console.log("No category selected, doing nothing.");
-                        return; // If no category selected, do nothing
+                        return;
                     }
-            
-                    // Make an AJAX request to fetch the services for the selected category
+
                     $.ajax({
-                        url: '{% url "fetch_services" %}', // Ensure this matches the correct URL
-                        data: { category_id: selectedCategoryId }, // Pass the correct category_id
+                        url: '{% url "fetch_services" %}',
+                        data: { category_id: selectedCategoryId },
                         dataType: 'json',
                         success: function(response) {
-                            console.log("AJAX response received for services:", response);
-            
-                            // Clear the service dropdown
                             serviceDropdown.innerHTML = '';
                             var defaultOption = document.createElement('option');
                             defaultOption.value = '';
                             defaultOption.textContent = 'Select a service';
                             serviceDropdown.appendChild(defaultOption);
-            
-                            // Add the services to the dropdown
+
                             response.services.forEach(function(service) {
                                 var option = document.createElement('option');
-                                option.value = service[0];  // service ID
-                                option.textContent = service[1];  // service name
+                                option.value = service[0];
+                                option.textContent = service[1];
                                 serviceDropdown.appendChild(option);
-                                console.log("Populated service - ID: " + service[0] + ", Name: " + service[1]);
                             });
-            
-                            // If no services are available
+
                             if (response.services.length === 0) {
                                 var noServiceOption = document.createElement('option');
                                 noServiceOption.value = '';
                                 noServiceOption.textContent = 'No services available';
                                 serviceDropdown.appendChild(noServiceOption);
-                                console.log("No services available for this category.");
                             }
                         },
                         error: function(xhr, status, error) {
@@ -150,8 +140,6 @@
                     });
                 });
             });
-            
-            
         </script>
 
     </head>
@@ -161,47 +149,36 @@
             <form action="{% url 'sp_add_service' %}" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
 
-                
+                <!-- Category Dropdown -->
                 <label for="category-dropdown">Category:</label>
                 <select id="category-dropdown" name="category_id" required>
-                    <option value="{{cat_name}}">
-                        {%if cat_name %}
-                            {{cat_name}}
-                        {%else%}
+                    <option value="{{ cat_name }}">
+                        {% if cat_name %}
+                            {{ cat_name }}
+                        {% else %}
                             Select a category
-                        {%endif%}
+                        {% endif %}
                     </option>
-
-                    
-                    {% for category in categories %}
-                    <option name="category" value="{{ category.0 }}">{{ category.1 }}</option>
-                    {% endfor %}
                 </select>
 
-
-                
-
-
+                <!-- Service Dropdown -->
                 <label for="service-dropdown">Service:</label>
                 <select id="service-dropdown" name="service_id" required>
-                    <option value="{{service.0}}">
-                        {%if service %}
-                            {{service.1}}
-                        {%else%}
+                    <option value="{{ service.0 }}">
+                        {% if service %}
+                            {{ service.1 }}
+                        {% else %}
                             Select a service
-                        {%endif%}
+                        {% endif %}
                     </option>
-                    {% for obj in service %}
-                    <option name="service" value="{{ service.0 }}">{{ service.1 }}</option>
-                    {% endfor %}
                 </select>
 
-                <input type="hidden" value={{ service.0 }} name="sp_service_id">
+                <input type="hidden" value="{{ service.0 }}" name="sp_service_id">
                 
                 <label for="price">Set Price ($)</label>
                 <input value="{{ price }}" type="number" class="form-control" id="price" name="price" placeholder="Enter Price" required>
 
-                <button  class="btn btn-primary btn-md" type="submit">Add Service</button>
+                <button class="btn btn-primary btn-md" type="submit">Add Service</button>
             </form>
         </div>
     {% endblock content %}

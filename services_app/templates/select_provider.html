@@ -51,7 +51,7 @@
                         <h5 class="card-title">{{obj.1}}</h5>
                         <p class="card-text">{{obj.2}}</p>
                         <p class="card-text">{{obj.3}}</p>
-                        <p class="card-text"><strong>Price:</strong> ₹{{price.0}}</p>
+                        <p class="card-text"><strong>Price:</strong> €{{price.0}}</p>
                         <div class="d-flex justify-content-between">
                             <form action="{% url 'subscriptions' %}" method="POST" style="margin: 0;">
                                 {% csrf_token %}
