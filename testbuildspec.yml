@@ -6,7 +6,6 @@ env:
     Organization: prod/sonar/x24112682:Organization
     Project: prod/sonar/x24112682:Project
     
-env:
   variables:
     DB_NAME: "x24112682-utility-rds"
     DB_USER: "admin"
