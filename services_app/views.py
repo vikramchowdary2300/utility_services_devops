@@ -625,7 +625,7 @@ class signup(View):
         request.session['username'] = username
         request.session['password'] = password
 
-        return render(request, template_name= 'signup.html')
+        return render(request, template_name= 'login.html')
 
 class login(View):
     def get(self, request, *args, **kwargs):
