@@ -12,8 +12,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 from django.core.management.utils import get_random_secret_key
-""" import pymysql
-pymysql.install_as_MySQLdb() """
+import pymysql
+pymysql.install_as_MySQLdb()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -89,7 +89,7 @@ WSGI_APPLICATION = "utility_services.wsgi.application"
 } """
 
 
-""" DATABASES = {
+DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': os.environ.get('DB_NAME', ''),       # DB name
@@ -103,10 +103,10 @@ WSGI_APPLICATION = "utility_services.wsgi.application"
             'COLLATION': 'utf8mb4_unicode_ci',
         },
     }
-} """
+}
 
 
-DATABASES = {
+""" DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'x24112682-utility-rds',
@@ -120,7 +120,7 @@ DATABASES = {
             'COLLATION': 'utf8mb4_unicode_ci',
         },
     }
-}
+} """
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
