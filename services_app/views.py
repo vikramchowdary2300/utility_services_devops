@@ -3,7 +3,7 @@ from django.http import HttpResponse,request
 from django.views import View
 from database import create_connection
 from django.conf import settings
-
+from django.contrib import messages
 
 from django.shortcuts import render, get_object_or_404, redirect
 import os
@@ -29,7 +29,7 @@ class user_home(View):
     def get(self, request, *args, **kwargs):
         username = request.session.get("username")
         conn = create_connection()
-        cur = conn.cursor()
+        cur = conn.cursor(buffered=True)
         cur.execute("select * from mstr_category")
         data = cur.fetchall()
 
@@ -66,7 +66,7 @@ class emergency_services(View):
 
         #category_id = request.POST.get("category_id")
         conn = create_connection()
-        cur = conn.cursor()
+        cur = conn.cursor(buffered=True)
         
         c_name = "Emergency"
         
@@ -85,7 +85,7 @@ class emergency_services(View):
 
         #category_id = request.POST.get("category_id")
         conn = create_connection()
-        cur = conn.cursor()
+        cur = conn.cursor(buffered=True)
         
         c_name = "Emergency"
         
@@ -112,7 +112,7 @@ class services(View):
 
         category_id = request.POST.get("category_id")
         conn = create_connection()
-        cur = conn.cursor()
+        cur = conn.cursor(buffered=True)
         cur.execute("SELECT c_name FROM mstr_category WHERE c_id = %s", (category_id,))
         c_name = cur.fetchone()
 
@@ -120,47 +120,6 @@ class services(View):
         data = cur.fetchall()
 
         return render(request, "services.html", {"data": data, "category_name": c_name, "username": username})
-
-
-""" 
-class select_provider(View):
-    def get(self, request, *args, **kwargs):
-        return render(request, template_name= 'select_provider.html')
-
-    def post(self, request, *args, **kwargs):
-        
-        service_id = request.POST.get("service_id")
-        
-        conn = create_connection()
-        cur = conn.cursor()
-        cur.execute("select * from mstr_service where s_id = %s",(service_id,))
-        service_data = cur.fetchone()
-        
-        print("---------------------->  SERVI : ",service_data)
-        
-        
-        conn = create_connection()
-        cur = conn.cursor()
-        cur.execute("select service_provider_id from service_provider_services where s_id = %s",(service_id,))
-        data = cur.fetchall()
-        
-        cur.execute("select price from service_provider_services where s_id = %s",(service_id,))
-        price = cur.fetchone()
-
-        if data:
-            service_provider_id = data[0][0]  
-            cur.execute("SELECT id, username, email, phone FROM mstr_service_provider WHERE id = %s", (service_provider_id,))
-            sp_data = cur.fetchall()
-
-        #print("------------------------->  DATA : ",sp_data)
-
-        return render(request, "select_provider.html",
-                      context={"data":sp_data,
-                               "service_id":service_data[0],
-                               "service_name":service_data[2],
-                               "service_description":service_data[3],
-                               "service_image":service_data[4],
-                               "price":price}) """
 
 
 class select_provider(View):
@@ -181,41 +140,41 @@ class select_provider(View):
             return redirect('login')
         
         conn = create_connection()
-        cur = conn.cursor()
-        cur.execute("select * from mstr_service where s_id = %s", (service_id,))
+        cur = conn.cursor(buffered=True)
+
+ 
+        cur.execute("SELECT * FROM mstr_service WHERE s_id = %s", (service_id,))
         service_data = cur.fetchone()
-        
         print("---------------------->  SERVI : ", service_data)
-        
-    
-        sp_data = None 
 
-        conn = create_connection()
-        cur = conn.cursor()
-        cur.execute("select service_provider_id from service_provider_services where s_id = %s", (service_id,))
+        cur.execute("SELECT service_provider_id FROM service_provider_services WHERE s_id = %s", (service_id,))
         data = cur.fetchall()
-        
-        cur.execute("select price from service_provider_services where s_id = %s", (service_id,))
-        price = cur.fetchone()
 
-        
+        cur2 = conn.cursor(buffered=True)
+        cur2.execute("SELECT price FROM service_provider_services WHERE s_id = %s", (service_id,))
+        price = cur2.fetchone()
+
+        sp_data = []
         if data:
             service_provider_id = data[0][0]
-            cur.execute("SELECT id, first_name, email, phone FROM mstr_service_provider WHERE id = %s and location_id = %s", (service_provider_id,location_id))
-            sp_data = cur.fetchall()
-
-        
-        if not sp_data:
-            sp_data = []
+            cur3 = conn.cursor(buffered=True)
+            cur3.execute(
+                "SELECT id, first_name, email, phone FROM mstr_service_provider WHERE id = %s AND location_id = %s",
+                (service_provider_id, location_id)
+            )
+            sp_data = cur3.fetchall()
 
         return render(request, "select_provider.html", 
-                      context={"data": sp_data,
-                               "service_id": service_data[0],
-                               "service_name": service_data[2],
-                               "service_description": service_data[3],
-                               "service_image": service_data[4],
-                               "price": price,
-                               "username":username})
+                      context={
+                          "data": sp_data,
+                          "service_id": service_data[0],
+                          "service_name": service_data[2],
+                          "service_description": service_data[3],
+                          "service_image": service_data[4],
+                          "price": price,
+                          "username": username
+                      })
+
 
 class subscription(View):
     def get(self, request, *args, **kwargs):
@@ -235,7 +194,7 @@ class subscription(View):
         service_id = request.POST.get("service_id")
 
         conn = create_connection()
-        cur = conn.cursor()
+        cur = conn.cursor(buffered=True)
         cur.execute("select * from mstr_service where s_id = %s", (service_id,))
         service_data = cur.fetchone()
 
@@ -244,7 +203,7 @@ class subscription(View):
         sp_data = None 
 
         conn = create_connection()
-        cur = conn.cursor()
+        cur = conn.cursor(buffered=True)
         cur.execute("select service_provider_id from service_provider_services where s_id = %s", (service_id,))
         data = cur.fetchall()
 
@@ -290,7 +249,7 @@ class add_to_cart(View):
             service_id = request.POST.get("service_id")
 
             conn = create_connection()
-            cur = conn.cursor()
+            cur = conn.cursor(buffered=True)
             cur.execute("select * from mstr_service where s_id = %s",(service_id,))
             service_data = cur.fetchone()
 
@@ -421,13 +380,13 @@ class confirm_payment(View):
         
         if start_date and end_date is not None:
             conn = create_connection()
-            cur = conn.cursor()
+            cur = conn.cursor(buffered=True)
             cur.execute("select id from service_provider_services where service_provider_id = %s and s_id = %s",(sp_id, service_id))
             sp_service_id = cur.fetchone()
             
             try:
                 conn = create_connection()
-                cur = conn.cursor()
+                cur = conn.cursor(buffered=True)
                 cur.execute("""insert into subscriptions (user_id, sp_id, p_service_id, from_date, to_date, address, total_amount) 
                             values (%s, %s, %s, %s, %s, %s, %s)""", (int(user_id), int(sp_id), int(sp_service_id[0]), start_date, end_date, address, float(total_amount) ))
                 conn.commit()
@@ -441,14 +400,14 @@ class confirm_payment(View):
         
         
         conn = create_connection()
-        cur = conn.cursor()
+        cur = conn.cursor(buffered=True)
         cur.execute("select id, price from service_provider_services where service_provider_id = %s and s_id = %s", (sp_id,service_id))
         sp_service_id = cur.fetchone()
 
         print("time ", time)
 
         try:
-            cur = conn.cursor()
+            cur = conn.cursor(buffered=True)
             cur.execute("""insert into orders (user_id, sp_id, p_service_id, address, bill_amount, datetime, booking_date, booking_time, status) 
                         values (%s, %s, %s, %s, %s, NOW(), %s, %s, %s)""", (int(user_id), int(sp_id), int(sp_service_id[0]), address, int(sp_service_id[1]),date,time,"initiated" ))
             conn.commit()
@@ -472,7 +431,7 @@ class orders(View):
         if username and user_id is not None:
         
             conn = create_connection()
-            cur = conn.cursor()
+            cur = conn.cursor(buffered=True)
             cur.execute("select * from orders where user_id = %s",(user_id,))
             data = cur.fetchall()
 
@@ -519,7 +478,7 @@ class user_subscriptions(View):
             if user_id:
                 print("USER_ID : ", user_id)
                 conn = create_connection()
-                cur = conn.cursor()
+                cur = conn.cursor(buffered=True)
                 cur.execute("SELECT * FROM subscriptions where user_id = %s", (user_id,))
                 data = cur.fetchall()
 
@@ -589,14 +548,26 @@ class signup(View):
         
         conn = create_connection()
         
-        cur = conn.cursor()
+        cur = conn.cursor(buffered=True)
         cur.execute("select id,city_name from mstr_location where city_name = %s",(city,))
         d = cur.fetchone()
+
+        cur = conn.cursor(buffered=True)
+        cur.execute("select email from mstr_user where email = %s",(email,))
+        e = cur.fetchone()
         
+        """ if len(e) > 0 and e is not None:
+            messages.error(request, "Email Already Exist")
+            return redirect('signup') """
+
+        if e is not None:
+            messages.error(request, "Email Already Exist")
+            return redirect('signup')
+
         if d is not None:
             l_id = d[0]
         else:
-            cur = conn.cursor()
+            cur = conn.cursor(buffered=True)
             q = """INSERT INTO mstr_location 
             (city_name) values (%s); """
             cur.execute(q,(city,))
@@ -608,14 +579,14 @@ class signup(View):
             l_id = d[0]
 
         if is_sp == 1:
-            cur = conn.cursor()
+            cur = conn.cursor(buffered=True)
             q = """INSERT INTO mstr_service_provider 
             (username, first_name, last_name, email, phone, password, location_id, is_service_provider) 
             VALUES (%s,%s,%s,%s,%s,%s,%s,%s); """
             cur.execute(q,(username,first_name,last_name,email,phone,password,l_id,is_sp))
             conn.commit()
         else:
-            cur = conn.cursor()
+            cur = conn.cursor(buffered=True)
             q = """INSERT INTO mstr_user
             (username, first_name, last_name, email, phone, password, location_id, is_service_provider) 
             VALUES (%s,%s,%s,%s,%s,%s,%s,%s); """
@@ -638,7 +609,7 @@ class login(View):
         # Check if both username and password are provided
         if username and password:
             conn = create_connection()
-            cur = conn.cursor()
+            cur = conn.cursor(buffered=True)
 
             cur.execute("SELECT username, password FROM mstr_admin WHERE username=%s AND password=%s", (username, password))
             admin = cur.fetchone()
@@ -652,7 +623,7 @@ class login(View):
                 request.session['username'] = username
                 request.session['password'] = password
                 
-                cur = conn.cursor()
+                cur = conn.cursor(buffered=True)
                 cur.execute("select id from mstr_service_provider where username=%s and password=%s", (username, password))
                 sp_id = cur.fetchone()
                 
@@ -667,7 +638,7 @@ class login(View):
                 request.session['username'] = username
                 request.session['password'] = password
                 
-                cur = conn.cursor()
+                cur = conn.cursor(buffered=True)
                 cur.execute("select id, location_id from mstr_user where username=%s and password=%s", (username, password))
                 user_id = cur.fetchone()
                 
@@ -695,7 +666,7 @@ class sp_orders(View):
                 print("SP_ID : ", sp_id)
                 
                 conn = create_connection()
-                cur = conn.cursor()
+                cur = conn.cursor(buffered=True)
                 cur.execute("SELECT * FROM orders where sp_id = %s ORDER BY datetime DESC", (sp_id,))
                 data = cur.fetchall()
 
@@ -731,7 +702,7 @@ class sp_orders(View):
         order_id = request.POST.get("order_id")
         
         conn = create_connection()
-        cur = conn.cursor()
+        cur = conn.cursor(buffered=True)
         cur.execute("update orders set status = %s where id = %s",("Complete",order_id))
         
         return redirect('sp_orders')
@@ -752,7 +723,7 @@ class sp_order_details(View):
         order_id = request.POST.get("order_id")
 
         conn = create_connection()
-        cur = conn.cursor()
+        cur = conn.cursor(buffered=True)
         
         cur.execute("SELECT * FROM orders where id = %s",(order_id,))
         data = cur.fetchall()
@@ -807,7 +778,7 @@ class sp_subscriptions(View):
                 print("SP_ID : ", sp_id)
                 
                 conn = create_connection()
-                cur = conn.cursor()
+                cur = conn.cursor(buffered=True)
                 cur.execute("SELECT * FROM subscriptions where sp_id = %s", (sp_id,))
                 data = cur.fetchall()
 
@@ -865,7 +836,7 @@ class sp_services(View):
         if not username:
             return redirect('login')
         conn = create_connection()
-        cur = conn.cursor()
+        cur = conn.cursor(buffered=True)
         cur.execute("select * from service_provider_services")
         data = cur.fetchall()
 
@@ -909,13 +880,13 @@ class sp_services(View):
 
             try:
                 conn = create_connection()
-                cur = conn.cursor()
+                cur = conn.cursor(buffered=True)
                 cur.execute("select p_service_id from orders where p_service_id = %s and sp_id = %s",(int(delete),sp_id))
                 d = cur.fetchall()
                 if len(d) > 0:
                     return HttpResponse("Service is being used by customers can not be deleted")
                 else:
-                    cur = conn.cursor()
+                    cur = conn.cursor(buffered=True)
                     cur.execute("delete from service_provider_services where id = %s",(int(delete),))
                     conn.commit()
 
@@ -933,7 +904,7 @@ class sp_services(View):
 #         sp_service_id = kwargs.get("service_id")
 
 #         conn = create_connection()
-#         cur = conn.cursor()
+#         cur = conn.cursor(buffered=True)
 
 #         cur.execute("SELECT c_id, s_id, price FROM service_provider_services")
 #         sp_services = cur.fetchall()
@@ -954,7 +925,7 @@ class sp_services(View):
 #         print("sp_services[1] : ", service_data[1])
 
 #         conn = create_connection()
-#         cur = conn.cursor()
+#         cur = conn.cursor(buffered=True)
 
 #         cur.execute("SELECT c_id, c_name FROM mstr_category")
 #         categories = cur.fetchall()
@@ -1006,7 +977,7 @@ class sp_services(View):
 
 #             try:
 #                 conn = create_connection()
-#                 cur = conn.cursor()
+#                 cur = conn.cursor(buffered=True)
 #                 cur.execute("""
 #                     update service_provider_services set s_id = %s, c_id = %s, price = %s
 #                     where s_id = %s
@@ -1023,7 +994,7 @@ class sp_services(View):
 
 #         try:
 #             conn = create_connection()
-#             cur = conn.cursor()
+#             cur = conn.cursor(buffered=True)
             
 #             cur.execute("""
 #                 INSERT INTO service_provider_services (service_provider_id, c_id, s_id, price)
@@ -1047,7 +1018,7 @@ class sp_add_service(View):
         sp_service_id = kwargs.get("service_id")
 
         conn = create_connection()
-        cur = conn.cursor()
+        cur = conn.cursor(buffered=True)
 
         cur.execute("SELECT c_id, s_id, price FROM service_provider_services")
         sp_services = cur.fetchall()
@@ -1099,7 +1070,7 @@ class sp_add_service(View):
 
             try:
                 conn = create_connection()
-                cur = conn.cursor()
+                cur = conn.cursor(buffered=True)
                 cur.execute("""
                     UPDATE service_provider_services 
                     SET s_id = %s, c_id = %s, price = %s
@@ -1117,7 +1088,7 @@ class sp_add_service(View):
 
         try:
             conn = create_connection()
-            cur = conn.cursor()
+            cur = conn.cursor(buffered=True)
             cur.execute("""
                 INSERT INTO service_provider_services (service_provider_id, c_id, s_id, price)
                 VALUES (%s, %s, %s, %s)
@@ -1142,7 +1113,7 @@ class fetch_services(View):
 
         if category_id:
             conn = create_connection()
-            cur = conn.cursor()
+            cur = conn.cursor(buffered=True)
 
             # Fetch services based on category
             cur.execute("SELECT s_id, s_name FROM mstr_service WHERE c_id = %s", [category_id])
@@ -1178,7 +1149,7 @@ class admin_dashboard(View):
     def get(self, request, *args, **kwargs):
         conn = create_connection()
         
-        cur = conn.cursor()
+        cur = conn.cursor(buffered=True)
         cur.execute("select count(id) from mstr_service_provider")
         sp = cur.fetchone()
         
@@ -1197,7 +1168,7 @@ class admin_dashboard(View):
 class admin_categories(View):
     def get(self, request, *args, **kwargs):
         conn = create_connection()
-        cur = conn.cursor()
+        cur = conn.cursor(buffered=True)
         cur.execute("select * from mstr_category")
         data = cur.fetchall()
         print("----------------------->  DATA : ",data)
@@ -1214,14 +1185,14 @@ class admin_categories(View):
             print("DELETE")
             try:
                 conn = create_connection()
-                cur = conn.cursor()
+                cur = conn.cursor(buffered=True)
                 cur.execute("select c_id from mstr_service where c_id = %s",(int(delete),))
                 d = cur.fetchall()
                 print("----------------->> DELETE CAT : ",d)
                 if len(d) > 0:
                     return HttpResponse("Category is being used can not be deleted")
                 else:
-                    cur = conn.cursor()
+                    cur = conn.cursor(buffered=True)
                     cur.execute("delete from mstr_category where c_id = %s",(int(delete),))
                     conn.commit()
             except Exception as e:
@@ -1232,7 +1203,7 @@ class admin_categories(View):
 class admin_services(View):
     def get(self, request, *args, **kwargs):
         conn = create_connection()
-        cur = conn.cursor()
+        cur = conn.cursor(buffered=True)
         cur.execute("select * from mstr_service")
         data = cur.fetchall()
 
@@ -1256,7 +1227,7 @@ class admin_services(View):
         
         
             """ conn = create_connection()
-            cur = conn.cursor()
+            cur = conn.cursor(buffered=True)
             
             cur.execute("select * from mstr_service where s_id = %s",(edit,))
             service = cur.fetchone()
@@ -1277,13 +1248,13 @@ class admin_services(View):
 
             try:
                 conn = create_connection()
-                cur = conn.cursor()
+                cur = conn.cursor(buffered=True)
                 cur.execute("select s_id from service_provider_services where s_id = %s",(int(delete),))
                 d = cur.fetchall()
                 if d is not None:
                     return HttpResponse("Service is being used can not be deleted")
                 else:
-                    cur = conn.cursor()
+                    cur = conn.cursor(buffered=True)
                     cur.execute("delete from mstr_service where s_id = %s",(int(delete),))
                     conn.commit()
             except Exception as e:
@@ -1296,7 +1267,7 @@ class admin_service_providers(View):
     def get(self, request, *args, **kwargs):
 
         conn = create_connection()
-        cur = conn.cursor()
+        cur = conn.cursor(buffered=True)
         cur.execute("select * from mstr_service_provider")
         data = cur.fetchall()
         print("----------------------->  DATA : ",data)
@@ -1317,7 +1288,7 @@ class admin_service_providers(View):
 class admin_orders(View):
     def get(self, request, *args, **kwargs):
         conn = create_connection()
-        cur = conn.cursor()
+        cur = conn.cursor(buffered=True)
         
         cur.execute("SELECT * FROM orders")
         data = cur.fetchall()
@@ -1354,7 +1325,7 @@ class admin_orders(View):
         print("----------------------->  Orders: ", orders)
         return render(request, 'admin_orders.html', context={"orders": orders})
 
-class admin_subscriptions(View):
+""" class admin_subscriptions(View):
     def get(self, request, *args, **kwargs):
         
         conn = create_connection()
@@ -1367,7 +1338,7 @@ class admin_subscriptions(View):
         
             
         conn = create_connection()
-        cur = conn.cursor()
+        cur = conn.cursor(buffered=True)
         cur.execute("SELECT * FROM subscriptions")
         data = cur.fetchall()
 
@@ -1410,7 +1381,74 @@ class admin_subscriptions(View):
 
         return render(request, 'admin_subscriptions.html', context={"subscriptions":subscriptions})
 
-        #return render(request, 'sp_subscriptions.html')
+        #return render(request, 'sp_subscriptions.html') """
+
+
+class admin_subscriptions(View):
+    def get(self, request, *args, **kwargs):
+
+        conn = create_connection()
+        username = request.session.get('username', None)
+        password = request.session.get('password', None)
+        sp_id = request.session.get('user_id', None)
+
+        subscriptions = []
+
+        cur = conn.cursor(buffered=True)
+        cur.execute("SELECT * FROM subscriptions")
+        data = cur.fetchall()
+
+        print("----------------------->  DATA : ", data)
+
+        for row in data:
+            user_id = row[1]
+            cur.execute("SELECT first_name FROM mstr_user WHERE id = %s", (user_id,))
+            cust_name = cur.fetchone()
+
+            if cust_name:
+                service_id = row[3]
+
+                # Get service name from mstr_service
+                cur.execute("SELECT s_name FROM mstr_service WHERE s_id = %s", (service_id,))
+                service_name = cur.fetchone()
+
+                # Get service provider id and service id from service_provider_services
+                cur.execute("SELECT service_provider_id, s_id FROM service_provider_services WHERE id = %s", (service_id,))
+                sp = cur.fetchone()
+
+                if sp:
+                    sp_id, s_id = sp
+
+                    # Get service provider name
+                    cur.execute("SELECT first_name FROM mstr_service_provider WHERE id = %s", (sp_id,))
+                    sp_name = cur.fetchone()
+
+                    # Get the actual service name again using s_id
+                    cur.execute("SELECT s_name FROM mstr_service WHERE s_id = %s", (s_id,))
+                    service_name = cur.fetchone()
+
+                    subscription_info = {
+                        "subscription": row,
+                        "customer_name": cust_name[0] if cust_name else "Unknown",
+                        "service_name": service_name[0] if service_name else "Unknown",
+                        "sp_name": sp_name[0] if sp_name else "Unknown"
+                    }
+
+                    subscriptions.append(subscription_info)
+                else:
+                    print(f"⚠️ No service_provider_services found for id = {service_id}")
+                    subscription_info = {
+                        "subscription": row,
+                        "customer_name": cust_name[0] if cust_name else "Unknown",
+                        "service_name": service_name[0] if service_name else "Unknown",
+                        "sp_name": "Unknown"
+                    }
+                    subscriptions.append(subscription_info)
+
+        print("----------------------->  Subscriptions : ", subscriptions)
+
+        return render(request, 'admin_subscriptions.html', context={"subscriptions": subscriptions})
+
 
     def post(self, request, *args, **kwargs):
         order_id = request.POST.get("order_id")
@@ -1421,7 +1459,7 @@ class admin_customers(View):
     def get(self, request, *args, **kwargs):
         
         conn = create_connection()
-        cur = conn.cursor()
+        cur = conn.cursor(buffered=True)
         cur.execute("select * from mstr_user")
         data = cur.fetchall()
         print("----------------------->  DATA : ",data)
@@ -1442,7 +1480,7 @@ class admin_add_category(View):
     def get(self, request, *args, **kwargs):
         category_id = kwargs.get("category_id")
         conn = create_connection()
-        cur = conn.cursor()
+        cur = conn.cursor(buffered=True)
         cur.execute("SELECT * FROM mstr_category WHERE c_id = %s", [category_id])
         category = cur.fetchone()
 
@@ -1465,7 +1503,7 @@ class admin_add_category(View):
             
             try:
                 conn = create_connection()
-                cur = conn.cursor()
+                cur = conn.cursor(buffered=True)
                 cur.execute("""
                     update mstr_category set c_name = %s,  c_description = %s, c_image = %s
                     where c_id = %s
@@ -1487,7 +1525,7 @@ class admin_add_category(View):
 
         try:
             conn = create_connection()
-            cur = conn.cursor()
+            cur = conn.cursor(buffered=True)
             cur.execute("""
                 INSERT INTO mstr_category (c_name, c_description, c_image)
                 VALUES (%s, %s, %s)
@@ -1506,7 +1544,7 @@ class admin_add_service(View):
         service_id = kwargs.get("service_id")
         
         conn = create_connection()
-        cur = conn.cursor()
+        cur = conn.cursor(buffered=True)
         cur.execute("SELECT * FROM mstr_category")
         categories = cur.fetchall()
         
@@ -1549,7 +1587,7 @@ class admin_add_service(View):
             
             try:
                 conn = create_connection()
-                cur = conn.cursor()
+                cur = conn.cursor(buffered=True)
                 cur.execute("""
                     update mstr_service set s_name = %s, c_id = %s, s_description = %s, s_image = %s
                     where s_id = %s
@@ -1571,7 +1609,7 @@ class admin_add_service(View):
 
         try:
             conn = create_connection()
-            cur = conn.cursor()
+            cur = conn.cursor(buffered=True)
             cur.execute("""
                 INSERT INTO mstr_service (s_name, c_id, s_description, s_image)
                 VALUES (%s, %s, %s, %s)
@@ -1592,7 +1630,7 @@ class admin_sp_services(View):
         
         sp_id = request.POST.get("sp_id")
         conn = create_connection()
-        cur = conn.cursor() 
+        cur = conn.cursor(buffered=True) 
         cur.execute("select * from service_provider_services where service_provider_id = %s",(sp_id,))
         data = cur.fetchall()
         
@@ -1631,7 +1669,7 @@ class admin_order_details(View):
         order_id = request.POST.get("order_id")
         
         conn = create_connection()
-        cur = conn.cursor()
+        cur = conn.cursor(buffered=True)
         
         cur.execute("SELECT * FROM orders where id = %s",(order_id,))
         data = cur.fetchall()
